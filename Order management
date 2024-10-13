@@ -1,0 +1,51 @@
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# 模拟订单数据存储
+orders = {
+    1: {'status': 'Shipped', 'items': ['item1', 'item2'], 'total': 50.00},
+    2: {'status': 'Processing', 'items': ['item3'], 'total': 25.00},
+}
+
+# 用户的订单历史
+user_orders = [1, 2]
+
+# 查看订单历史
+@app.route('/orders/history', methods=['GET'])
+def get_order_history():
+    return jsonify({order_id: orders[order_id] for order_id in user_orders})
+
+# 跟踪当前订单状态
+@app.route('/orders/<int:order_id>', methods=['GET'])
+def track_order(order_id):
+    order = orders.get(order_id)
+    if order:
+        return jsonify(order)
+    else:
+        return jsonify({'error': 'Order not found'}), 404
+
+# 取消订单
+@app.route('/orders/cancel/<int:order_id>', methods=['POST'])
+def cancel_order(order_id):
+    if order_id in orders:
+        orders[order_id]['status'] = 'Cancelled'
+        return jsonify({'message': 'Order cancelled successfully', 'order': orders[order_id]})
+    else:
+        return jsonify({'error': 'Order not found'}), 404
+
+# 修改订单
+@app.route('/orders/update/<int:order_id>', methods=['PUT'])
+def update_order(order_id):
+    if order_id in orders:
+        data = request.json
+        if 'items' in data:
+            orders[order_id]['items'] = data['items']
+        if 'total' in data:
+            orders[order_id]['total'] = data['total']
+        return jsonify({'message': 'Order updated successfully', 'order': orders[order_id]})
+    else:
+        return jsonify({'error': 'Order not found'}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
