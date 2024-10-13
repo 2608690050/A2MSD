@@ -1,0 +1,98 @@
+pip install Flask
+import sqlite3
+
+def init_db():
+    conn = sqlite3.connect('user_preferences.db')
+    cursor = conn.cursor()
+
+    # 创建用户信息表
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            email TEXT,
+            phone TEXT
+        )
+    ''')
+
+    # 创建地址表
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS addresses (
+            id INTEGER PRIMARY KEY,
+            user_id INTEGER,
+            address TEXT,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
+    # 创建饮品偏好表
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS drink_preferences (
+            id INTEGER PRIMARY KEY,
+            user_id INTEGER,
+            drink_name TEXT,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+init_db()
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# 保存用户个人信息
+@app.route('/save_user', methods=['POST'])
+def save_user():
+    data = request.json
+    conn = sqlite3.connect('user_preferences.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO users (name, email, phone) VALUES (?, ?, ?)
+    ''', (data['name'], data['email'], data['phone']))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "User info saved!"}), 201
+
+# 保存常用地址
+@app.route('/save_address', methods=['POST'])
+def save_address():
+    data = request.json
+    conn = sqlite3.connect('user_preferences.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO addresses (user_id, address) VALUES (?, ?)
+    ''', (data['user_id'], data['address']))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Address saved!"}), 201
+
+# 设置饮品偏好
+@app.route('/set_drink_preference', methods=['POST'])
+def set_drink_preference():
+    data = request.json
+    conn = sqlite3.connect('user_preferences.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO drink_preferences (user_id, drink_name) VALUES (?, ?)
+    ''', (data['user_id'], data['drink_name']))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Drink preference saved!"}), 201
+
+# 获取个性化饮品推荐
+@app.route('/get_recommendations/<int:user_id>', methods=['GET'])
+def get_recommendations(user_id):
+    conn = sqlite3.connect('user_preferences.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT drink_name FROM drink_preferences WHERE user_id = ?
+    ''', (user_id,))
+    drinks = cursor.fetchall()
+    conn.close()
+    return jsonify({"recommendations": [drink[0] for drink in drinks]}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
