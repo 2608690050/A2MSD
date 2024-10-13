@@ -1,0 +1,57 @@
+class Drink:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+
+class ShoppingCart:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, drink):
+        self.items.append(drink)
+
+    def total_price(self):
+        return sum(drink.price for drink in self.items)
+
+    def show_items(self):
+        return [(drink.name, drink.price) for drink in self.items]
+
+
+class Payment:
+    def __init__(self, cart):
+        self.cart = cart
+
+    def pay(self, method):
+        total = self.cart.total_price()
+        if method == "credit_card":
+            print(f"Processing credit card payment of {total:.2f}")
+        elif method == "alipay":
+            print(f"Processing Alipay payment of {total:.2f}")
+        elif method == "wechat":
+            print(f"Processing WeChat payment of {total:.2f}")
+        else:
+            print("Invalid payment method!")
+
+
+# Example usage:
+if __name__ == "__main__":
+    # 创建饮品
+    coffee = Drink("Coffee", 5.0)
+    tea = Drink("Tea", 3.0)
+
+    # 创建购物车并添加饮品
+    cart = ShoppingCart()
+    cart.add_item(coffee)
+    cart.add_item(tea)
+
+    # 显示购物车内容
+    print("Items in cart:", cart.show_items())
+    print("Total price:", cart.total_price())
+
+    # 选择支付方式
+    payment_method = input("Select payment method (credit_card/alipay/wechat): ")
+    
+    # 处理支付
+    payment = Payment(cart)
+    payment.pay(payment_method)
