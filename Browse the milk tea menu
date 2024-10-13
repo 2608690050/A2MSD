@@ -1,1 +1,72 @@
+class Drink:
+    def __init__(self, name, ingredients, price, reviews):
+        self.name = name
+        self.ingredients = ingredients
+        self.price = price
+        self.reviews = reviews
+
+    def display_info(self):
+        print(f"饮品名称: {self.name}")
+        print(f"配料: {', '.join(self.ingredients)}")
+        print(f"价格: {self.price}元")
+        print("顾客评价:")
+        for review in self.reviews:
+            print(f" - {review}")
+        print("\n")
+
+
+class Menu:
+    def __init__(self):
+        self.categories = {
+            "经典奶茶": [],
+            "果茶": [],
+            "特调饮品": []
+        }
+
+    def add_drink(self, category, drink):
+        if category in self.categories:
+            self.categories[category].append(drink)
+        else:
+            print("无效的饮品类别")
+
+    def display_menu(self):
+        for category, drinks in self.categories.items():
+            print(f"=== {category} ===")
+            if drinks:
+                for drink in drinks:
+                    drink.display_info()
+            else:
+                print("暂无饮品\n")
+
+
+# 创建饮品实例
+classic_milk_tea = Drink(
+    "经典奶茶",
+    ["红茶", "牛奶", "糖"],
+    18,
+    ["口感顺滑", "茶香浓郁"]
+)
+
+fruit_tea = Drink(
+    "水果茶",
+    ["绿茶", "柠檬", "草莓", "糖"],
+    20,
+    ["清新可口", "非常喜欢柠檬味"]
+)
+
+special_drink = Drink(
+    "特调饮品",
+    ["抹茶", "牛奶", "香草", "糖"],
+    25,
+    ["味道独特", "适合喜欢抹茶的人"]
+)
+
+# 创建菜单实例并添加饮品
+menu = Menu()
+menu.add_drink("经典奶茶", classic_milk_tea)
+menu.add_drink("果茶", fruit_tea)
+menu.add_drink("特调饮品", special_drink)
+
+# 显示菜单
+menu.display_menu()
 
