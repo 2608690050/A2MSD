@@ -1,1 +1,97 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "奶茶店"
+  }
+}
+<view class="container">
+  <view class="header">
+    <text class="title">欢迎来到奶茶店</text>
+  </view>
+  
+  <view class="product-list">
+    <block wx:for="{{products}}" wx:key="index">
+      <view class="product-item">
+        <image class="product-image" src="{{item.image}}" mode="aspectFill"></image>
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-price">¥{{item.price}}</text>
+        <button class="order-button" bindtap="orderProduct" data-index="{{index}}">立即购买</button>
+      </view>
+    </block>
+  </view>
+</view>
+.container {
+  padding: 16px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.product-item {
+  width: 48%;
+  margin: 1%;
+  border: 1px solid #eaeaea;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.product-image {
+  width: 100%;
+  height: 120px;
+}
+
+.product-name {
+  display: block;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.product-price {
+  color: #ff5722;
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.order-button {
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px;
+  cursor: pointer;
+}
+Page({
+  data: {
+    products: [
+      { name: "珍珠奶茶", price: 15, image: "/images/drink1.jpg" },
+      { name: "草莓奶茶", price: 18, image: "/images/drink1.jpg" },
+      { name: "抹茶奶茶", price: 20, image: "/images/drink1.jpg" },
+      { name: "芒果奶茶", price: 22, image: "/images/drink1.jpg" },
+    ]
+  },
+
+  orderProduct: function(event) {
+    const index = event.currentTarget.dataset.index;
+    const product = this.data.products[index];
+    wx.showToast({
+      title: `已添加 ${product.name} 到购物车`,
+      icon: 'success'
+    });
+  }
+});
 
