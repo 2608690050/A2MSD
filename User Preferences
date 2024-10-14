@@ -66,9 +66,7 @@ def set_drink_preference():
     cursor.execute('''
         INSERT INTO drink_preferences (user_id, drink_name) VALUES (?, ?)
     ''', (data['user_id'], data['drink_name']))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Drink preference saved!"}), 201
+   
 
 
 # 获取个性化饮品推荐
@@ -87,7 +85,13 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
-
+def save_user():
+    data = request.json
+    conn = sqlite3.connect('user_preferences.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO users (name, email, phone) VALUES (?, ?, ?)
+    ''', (data['name'], data['email'], data['phone']))
 # 保存常用地址
 @app.route('/save_address', methods=['POST'])
 def save_address():
